@@ -1,7 +1,0 @@
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\bin\Debug\ImageStackerConsole.exe.config
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\bin\Debug\ImageStackerConsole.exe
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\bin\Debug\ImageStackerConsole.pdb
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\obj\Debug\ImageStackerConsole.csproj.AssemblyReference.cache
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\obj\Debug\ImageStackerConsole.csproj.CoreCompileInputs.cache
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\obj\Debug\ImageStackerConsole.exe
-C:\Users\Kier\Developing\ImageStackerConsole\ImageStackerConsole\obj\Debug\ImageStackerConsole.pdb
