@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace ImageStackerConsole
+namespace ImageStackerConsole.Alignmnet
 {
     public class AlignedImages
     {
@@ -13,7 +13,7 @@ namespace ImageStackerConsole
             ImagePaths = Paths;
         }
 
-        public string[] getStringRepresentation()
+        public string[] GetStringRepresentation()
         {
             string[] Output = Enumerable.Repeat(string.Empty, ImagePaths.Length + 1).ToArray(); // empty string array
 
@@ -47,7 +47,7 @@ namespace ImageStackerConsole
                 for (int i = 0; i < imagePaths.Length; i++)
                 {
                     offsetParameterTable[j, i] = new OffsetParameters(lineOfCoords[i]);
-                }
+                } 
             }
             
             return new AlignedImages(imagePaths, offsetParameterTable);

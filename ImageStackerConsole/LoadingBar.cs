@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImageStackerConsole
 {
-    class LoadingBar
+    public class LoadingBar
     {
     }
 }

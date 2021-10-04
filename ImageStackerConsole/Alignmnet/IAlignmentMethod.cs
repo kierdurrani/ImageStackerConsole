@@ -1,9 +1,9 @@
-﻿namespace ImageStackerConsole.AlignmnetMethods
+﻿namespace ImageStackerConsole.Alignmnet
 {
-    interface IAlignmentMethod
+    public interface IAlignmentMethod
     {
 
-        OffsetParameters CalculateOffsetParameters(RGBImage img1, RGBImage img2, LoadingBar loadingBar);
+        OffsetParameters CalculateOffsetParameters(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar);
 
 
     }

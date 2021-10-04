@@ -1,19 +1,23 @@
-﻿using ImageStackerConsole.AlignmnetMethods;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ImageStackerConsole
+﻿namespace ImageStackerConsole.Alignmnet
 {
     public class AlignmentOrchestrator
     {
-        
+
         private string[] ImagePaths;
         private IAlignmentMethod AlignmentMethod;
-        private bool allPairs = false;
+        public bool allPairs {get; set;} = false;
 
         private LoadingBar AlignmentLoadingBar;
 
         // LoadingBar<OffsetParameters[][]>
+
+
+        public AlignmentOrchestrator(string[] paths, IAlignmentMethod method)
+        {
+            ImagePaths = paths;
+            AlignmentMethod = method;
+        }
+
         public AlignedImages CalculateOffsetParameterTable()
         {
             AlignmentLoadingBar = new LoadingBar();
