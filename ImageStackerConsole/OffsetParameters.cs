@@ -46,7 +46,8 @@ namespace ImageStackerConsole
 
         public string GetStringRepresentation()
         {
-            return X + "," + Y + "," + Theta + "," + Zoom;
+            
+            return (X + "," + Y + "," + Theta + "," + Zoom);
         }
 
         // Boolean methods for validation
@@ -64,20 +65,22 @@ namespace ImageStackerConsole
 
         public static bool TriangleEquality(OffsetParameters first, OffsetParameters second, OffsetParameters third)
         {
-            OffsetParameters total = Compose(Compose(first, second), third.Invert());
+            OffsetParameters total = Compose(Compose(first, second), third.CalculateInverse());
             return total.IsCloseToIdentity();
         }
 
         // GROUP ACTION TYPE METHODS
         public double[] TransformCoordinates(double PreTransform_X, double PreTransform_Y) 
-        {   
+        {
+            Console.WriteLine($"DEBUG: Transform in: {PreTransform_X},{PreTransform_Y}");
             double PostRotation_X = Zoom * (PreTransform_X * Math.Cos(Theta) + PreTransform_Y * Math.Sin(Theta));
             double PostRotation_Y = Zoom * (PreTransform_Y * Math.Cos(Theta) - PreTransform_X * Math.Sin(Theta));
 
+            Console.WriteLine($"DEBUG: Transform post rotation: {PostRotation_X},{PostRotation_Y}");
             return (new double[] { PostRotation_X + X, PostRotation_Y + Y } );
         } 
 
-        public OffsetParameters Invert()
+        public OffsetParameters CalculateInverse()
         {            
             // Let X be the pretransformation coordinate vector and R(t,k) the rotation & scaling matrix.
             // X' = R(t, k) * X + trans.       Hence:   X = R^-1(t, k) (X' - trans.) 
@@ -91,15 +94,15 @@ namespace ImageStackerConsole
 
         public static OffsetParameters Compose(OffsetParameters FirstTransform, OffsetParameters LastTransform)
         {
-            double EffectiveAngle = FirstTransform.Theta + LastTransform.Theta;
-            double EffectiveZoom = FirstTransform.Zoom  * LastTransform.Zoom;
+            double ComposedAngle = FirstTransform.Theta + LastTransform.Theta;
+            double ComposedZoom = FirstTransform.Zoom * LastTransform.Zoom;
             
             // The 2nd transformation's rotation/zoom composes with and affects the translation from the first transform.
             double[] TransformedTranslation = LastTransform.TransformCoordinates(FirstTransform.X, FirstTransform.Y);
-            double EffectiveX = TransformedTranslation[0] + LastTransform.X;
-            double EffectiveY = TransformedTranslation[1] + LastTransform.Y;
+            double ComposedX = TransformedTranslation[0];
+            double ComposedY = TransformedTranslation[1];
 
-            return new OffsetParameters( EffectiveX, EffectiveY, EffectiveAngle, EffectiveZoom);
+            return new OffsetParameters(ComposedX, ComposedY, ComposedAngle, ComposedZoom);
         }
 
 

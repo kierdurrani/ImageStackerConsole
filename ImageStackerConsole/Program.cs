@@ -24,21 +24,30 @@ namespace ImageStackerConsole
             img.GetGreyscaleArray();
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
-           
-            Point ulCorner = new Point(100, 100);
 
+
+            OffsetParameters Param1 = new OffsetParameters(-24, 76, 0, 1);
+            OffsetParameters Param2 = new OffsetParameters(134,-101,0,1);
+            Param2 = Param2.CalculateInverse();
+
+            Console.WriteLine( Param1.GetStringRepresentation());
+            Console.WriteLine( Param2.GetStringRepresentation());
+
+            Console.WriteLine(OffsetParameters.Compose(Param1, Param2).GetStringRepresentation());
 
 
             string[] ImagePaths = new string[] {
-                @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1311.JPG",
-                @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1320.JPG"
-            };
-        
-            AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, new MethodCrossCorrelation());
-            orchestrator.allPairs = true;
+                            @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1311.JPG",
+                            @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1320.JPG",
+                            @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1326.JPG"
+                        };
 
-            AlignedImages alignedImages =  orchestrator.CalculateOffsetParameterTable();
-            WriteStringArrayToFile(@"C:\Users\Kier\Pictures\OUTPUT_TEST.txt", alignedImages.GetStringRepresentation() );
+            AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, new MethodCrossCorrelation());
+            orchestrator.allPairs = false;
+
+            AlignedImages alignedImages = orchestrator.CalculateOffsetParameterTable();
+
+            WriteStringArrayToFile(@"C:\Users\Kier\Pictures\OUTPUT_TEST.txt", alignedImages.GetStringRepresentation());
 
             Console.WriteLine("Program Ended. Press any key to close.");
             Console.ReadKey();

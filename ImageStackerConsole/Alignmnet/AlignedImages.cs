@@ -5,16 +5,18 @@ namespace ImageStackerConsole.Alignmnet
 {
     public class AlignedImages
     {
-        private string[] ImagePaths { get; }
+        public string[] ImagePaths { get; }
         OffsetParameters[,] OffsetParameterTable { get; }
 
         public AlignedImages(string[] Paths, OffsetParameters[,] alignmentParameters)
         {
             ImagePaths = Paths;
+            OffsetParameterTable = alignmentParameters;
         }
 
         public string[] GetStringRepresentation()
         {
+            Console.WriteLine("Getting String Rep");
             string[] Output = Enumerable.Repeat(string.Empty, ImagePaths.Length + 1).ToArray(); // empty string array
 
             foreach (string ImagePath in ImagePaths)
@@ -22,11 +24,13 @@ namespace ImageStackerConsole.Alignmnet
                 Output[0] += (ImagePath + ";");
             }
 
-            for (int y = 0; y <= OffsetParameterTable.GetLength(0) ; y++)
+            for (int y = 0; y < OffsetParameterTable.GetLength(0) ; y++)
             {
-                for (int x = 0; x <= OffsetParameterTable.GetLength(0); x++)
+                for (int x = 0; x < OffsetParameterTable.GetLength(0); x++)
                 {
-                    Output[y + 1] += OffsetParameterTable[y,x].GetStringRepresentation() + ";";
+                    Console.WriteLine($"Getting string rep for ({y},{x})");
+                    string stringRep = OffsetParameterTable[y, x].GetStringRepresentation() + ";";
+                    Output[y + 1] += stringRep;
                 }
             }
             return Output;

@@ -28,7 +28,7 @@
             for (int i = 0; i < OffsetParametersArray.GetLength(0) ; i++)
             {
                 RGBImage iImage = new RGBImage(ImagePaths[i]);
-                OffsetParametersArray[0,i] =  AlignmentMethod.CalculateOffsetParameters(jImage, jImage, AlignmentLoadingBar);
+                OffsetParametersArray[0,i] =  AlignmentMethod.CalculateOffsetParameters(jImage, iImage, AlignmentLoadingBar);
 
                 // TODO, set progress!
             }
@@ -42,21 +42,19 @@
                     for (int i = 0; i < OffsetParametersArray.GetLength(1); i++)
                     {
                         RGBImage iImage = new RGBImage(ImagePaths[i]);
-                        OffsetParametersArray[j, i] = AlignmentMethod.CalculateOffsetParameters(jImage, jImage, AlignmentLoadingBar);
+                        OffsetParametersArray[j, i] = AlignmentMethod.CalculateOffsetParameters(jImage, iImage, AlignmentLoadingBar); // TODO: confirm this is right way round
                     }
                 }
                 else
                 {
-                    for (int i = 1; i < OffsetParametersArray.GetLength(1); i++)
+                    for (int i = 0; i < OffsetParametersArray.GetLength(1); i++)
                     {
-                        RGBImage iImage = new RGBImage(ImagePaths[i]);
-
                         // j -> i = (0 -> j)^-1 . (0 -> i)   - but remember, the right-most one acts first
-                        OffsetParametersArray[j, i] = OffsetParameters.Compose( OffsetParametersArray[0, i], (OffsetParametersArray[0, j]).Invert() );
+                        OffsetParametersArray[j, i] = OffsetParameters.Compose( OffsetParametersArray[0, i], OffsetParametersArray[0, j].CalculateInverse() );
                     }
                 }
             }
-
+            System.Console.WriteLine("Finished Alignment.");
             return  (new AlignedImages(ImagePaths, OffsetParametersArray));
         }
 

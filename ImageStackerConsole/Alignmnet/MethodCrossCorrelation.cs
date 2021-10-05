@@ -10,42 +10,45 @@ namespace ImageStackerConsole.Alignmnet
             byte[,] img2 = rgbImg2.GetGreyscaleArray();
 
 
-            byte[,] smallImg1 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img1))));
-            byte[,] smallImg2 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img2))));
+            byte[,] smallImg1 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img1))))));
+            byte[,] smallImg2 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img2))))));
+            int scaleFactor = 8;
 
-            double bestValue = 0.0;
+            ulong bestValue = 0;
             int yMax = (int) (0.75 * Math.Min(smallImg1.GetLength(0), smallImg2.GetLength(1)) );
             int xMax = (int) (0.75 * Math.Min(smallImg1.GetLength(1), smallImg2.GetLength(1)) );
 
             int xBest = 0;
             int yBest = 0;
-
             for (int yOffset = -yMax; yOffset < yMax; yOffset++)
             {
                 Console.WriteLine($"{yOffset} out of {yMax}");
                 for (int xOffset = -xMax; xOffset < xMax; xOffset++)
                 {
                     // TODO add ROTATION
-                    int correlation = CalculateCrossCorrelation(smallImg1, smallImg2, xOffset, yOffset);
+                    ulong correlation = CalculateCrossCorrelation(smallImg1, smallImg2, xOffset, yOffset);
                     if (correlation > bestValue)
                     {
-                        xBest = 4 * xOffset;
-                        yBest = 4 * yOffset;
+                        xBest = scaleFactor * xOffset;
+                        yBest = scaleFactor * yOffset;
                         bestValue = correlation;
                     }
                 }
             }
 
+
             // Precise Alignment:
-            for (int yOffset = yBest - 4; yOffset < yBest + 4; yOffset++)
+            bestValue = 0; // Reset best value. Blurring may cause worse alignment to look better?
+            for (int yOffset = yBest - scaleFactor; yOffset < yBest + scaleFactor; yOffset++)
             {
-                for (int xOffset = xBest - 4; xOffset < xBest + 4; xOffset++)
+                for (int xOffset = xBest - scaleFactor; xOffset < xBest + scaleFactor; xOffset++)
                 {
-                    int correlation = CalculateCrossCorrelation(img1, img2, xOffset, yOffset);
+                    ulong correlation = CalculateCrossCorrelation(img1, img2, xOffset, yOffset);
                     if (correlation > bestValue)
                     {
                         xBest = xOffset;
                         yBest = yOffset;
+                        Console.WriteLine($"DEBUG: ({xOffset},{yOffset},{bestValue})");
                         bestValue = correlation;
                     }
                 }
@@ -95,11 +98,11 @@ namespace ImageStackerConsole.Alignmnet
         }
 
 
-        private int CalculateCrossCorrelation(byte[,] img1, byte[,] img2, int xOffset, int yOffset)
+        private ulong CalculateCrossCorrelation(byte[,] img1, byte[,] img2, int xOffset, int yOffset)
         {
             // Assert offsets are bounded between 0-75% of dimension.
 
-            int correlation = 0;
+            ulong correlation = 0;
 
             // Having a -ve offset is the same as offsetting the OTHER picture by a positive amount.
             // Do this by inverting the bounds of the for loop
@@ -108,6 +111,7 @@ namespace ImageStackerConsole.Alignmnet
             int yLimit = (int) (0.75 * Math.Min(img2.GetLength(0), img1.GetLength(0)) );
             int xLimit = (int) (0.75 * Math.Min(img2.GetLength(1), img1.GetLength(1)) );
 
+ 
             if (xOffset >= 0)
             {
                 if (yOffset >= 0)
@@ -115,10 +119,12 @@ namespace ImageStackerConsole.Alignmnet
                     //  +x +y
                     for (int y = yOffset; y < (yLimit - yOffset); y++)
                     {
+                        int buffer = 0; // prevent overflow
                         for (int x = xOffset; x < (xLimit - xOffset); x++)
                         {
-                            correlation += img1[y + yOffset,x + xOffset] * img2[y,x];
+                            buffer += img1[y + yOffset, x + xOffset] * img2[y, x];
                         }
+                        correlation += (ulong) buffer;
                     }
                 }
                 else
@@ -127,10 +133,12 @@ namespace ImageStackerConsole.Alignmnet
                     yOffset = -yOffset;
                     for (int y = yOffset; y < (yLimit - yOffset); y++)
                     {
+                        int buffer = 0; // prevent overflow
                         for (int x = xOffset; x < (xLimit - xOffset); x++)
                         {
-                            correlation += img1[y,x + xOffset] * img2[y + yOffset,x];
+                            buffer += img1[y, x + xOffset] * img2[y + yOffset, x];
                         }
+                        correlation += (ulong) buffer;
                     }
                 }
             }
@@ -143,10 +151,12 @@ namespace ImageStackerConsole.Alignmnet
                     //  -x +y
                     for (int y = yOffset; y < (yLimit - yOffset); y++)
                     {
+                        int buffer = 0; // prevent overflow
                         for (int x = xOffset; x < (xLimit - xOffset); x++)
                         {
-                            correlation += img1[y + yOffset,x] * img2[y,x + xOffset];
+                            buffer += img1[y + yOffset, x] * img2[y, x + xOffset];
                         }
+                        correlation += (ulong) buffer;
                     }
                 }
                 else
@@ -155,10 +165,12 @@ namespace ImageStackerConsole.Alignmnet
                     yOffset = -yOffset;
                     for (int y = yOffset; y < (yLimit - yOffset); y++)
                     {
+                        int buffer = 0; // prevent overflow
                         for (int x = xOffset; x < (xLimit - xOffset); x++)
                         {
-                            correlation += img1[y,x] * img2[y + yOffset,x + xOffset];
+                            buffer += img1[y, x] * img2[y + yOffset, x + xOffset];
                         }
+                        correlation += (ulong) buffer;
                     }
                 }
             }
