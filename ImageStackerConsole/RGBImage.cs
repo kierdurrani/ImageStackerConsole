@@ -22,7 +22,7 @@ namespace ImageStackerConsole
             // Lock bitmap to BitmapData class, copy into the PixelByteArray, then copy into correct shape array
 
             Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
-            System.Console.WriteLine(img.PixelFormat);
+            // Console.WriteLine( "DEBUG: " + img.PixelFormat);
             BitmapData bmpData = img.LockBits(rect, ImageLockMode.ReadOnly, img.PixelFormat);
 
             

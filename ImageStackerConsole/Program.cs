@@ -26,8 +26,9 @@ namespace ImageStackerConsole
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
 
-            OffsetParameters Param1 = new OffsetParameters(-24, 76, 0, 1);
-            OffsetParameters Param2 = new OffsetParameters(134,-101,0,1);
+            OffsetParameters Param1 = new OffsetParameters(0, 0, 0, 1);
+            OffsetParameters Param2 = new OffsetParameters(-24, 76, 0, 1);
+            OffsetParameters Param3 = new OffsetParameters(134,-101,0,1);
             Param2 = Param2.CalculateInverse();
 
             Console.WriteLine( Param1.GetStringRepresentation());
@@ -43,11 +44,14 @@ namespace ImageStackerConsole
                         };
 
             AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, new MethodCrossCorrelation());
-            orchestrator.allPairs = false;
+      
+            orchestrator.allPairs = true;
 
             AlignedImages alignedImages = orchestrator.CalculateOffsetParameterTable();
 
             WriteStringArrayToFile(@"C:\Users\Kier\Pictures\OUTPUT_TEST.txt", alignedImages.GetStringRepresentation());
+
+            alignedImages.IsConsistent();
 
             Console.WriteLine("Program Ended. Press any key to close.");
             Console.ReadKey();

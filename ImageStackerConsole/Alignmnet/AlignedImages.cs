@@ -37,7 +37,7 @@ namespace ImageStackerConsole.Alignmnet
         }
 
        
-        public static AlignedImages ImportAlignmentParameters(string FilePath)
+        public static AlignedImages ImplortAlignmentParameters(string FilePath)
         {
 
             string[] lines = System.IO.File.ReadAllLines(FilePath);
@@ -60,7 +60,43 @@ namespace ImageStackerConsole.Alignmnet
         // TODO METHODS
         public bool IsConsistent()
         {
-            return true;
+            bool isConsistent = true;
+            for (int j = 0; j < OffsetParameterTable.GetLength(0); j++)
+            {
+                for (int i = 0; i < OffsetParameterTable.GetLength(1); i++)
+                {
+
+                    // Checks that (i,j) = (-i,-j) and that the diagonal is zero
+                    bool thisConsistent = OffsetParameters.Compose(OffsetParameterTable[j, i],
+                        OffsetParameterTable[i, j]).IsCloseToIdentity();
+
+                    if (!thisConsistent) 
+                    {
+                        isConsistent = false;
+                        Console.WriteLine($"Not consistent inverse for {(i,j)}");
+                    }
+                    
+
+               
+                    // Check for the triangle inequality
+                    for (int k = 0; k < OffsetParameterTable.GetLength(0); k++)
+                    {
+
+                        bool triConsistent = OffsetParameters.TriangleEquality(OffsetParameterTable[i, j], OffsetParameterTable[j, k], OffsetParameterTable[i, k]);
+                        if (! triConsistent)
+                        {
+                            isConsistent = false;
+                            Console.WriteLine($"Triangle equality not consistent for {(i, j, k)}");
+                        }
+
+                    }
+                }
+            }
+            if (isConsistent){ Console.WriteLine("Set of Images is consistent. Ready to stack."); }
+            else {             Console.WriteLine("Set of images not consistent. Cannot stack. "); }
+
+            return (isConsistent);
+
         }
 
     }

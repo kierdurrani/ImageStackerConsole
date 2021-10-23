@@ -46,7 +46,6 @@ namespace ImageStackerConsole
 
         public string GetStringRepresentation()
         {
-            
             return (X + "," + Y + "," + Theta + "," + Zoom);
         }
 
@@ -72,11 +71,11 @@ namespace ImageStackerConsole
         // GROUP ACTION TYPE METHODS
         public double[] TransformCoordinates(double PreTransform_X, double PreTransform_Y) 
         {
-            Console.WriteLine($"DEBUG: Transform in: {PreTransform_X},{PreTransform_Y}");
+            //Console.WriteLine($"DEBUG: Transform in: {PreTransform_X},{PreTransform_Y}");
             double PostRotation_X = Zoom * (PreTransform_X * Math.Cos(Theta) + PreTransform_Y * Math.Sin(Theta));
             double PostRotation_Y = Zoom * (PreTransform_Y * Math.Cos(Theta) - PreTransform_X * Math.Sin(Theta));
 
-            Console.WriteLine($"DEBUG: Transform post rotation: {PostRotation_X},{PostRotation_Y}");
+           //Console.WriteLine($"DEBUG: Transform post rotation: {PostRotation_X},{PostRotation_Y}");
             return (new double[] { PostRotation_X + X, PostRotation_Y + Y } );
         } 
 

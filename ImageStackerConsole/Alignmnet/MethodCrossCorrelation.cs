@@ -10,9 +10,9 @@ namespace ImageStackerConsole.Alignmnet
             byte[,] img2 = rgbImg2.GetGreyscaleArray();
 
 
-            byte[,] smallImg1 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img1))))));
-            byte[,] smallImg2 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img2))))));
-            int scaleFactor = 8;
+            byte[,] smallImg1 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img1))))))));
+            byte[,] smallImg2 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img2))))))));
+            int scaleFactor = 16;
 
             ulong bestValue = 0;
             int yMax = (int) (0.75 * Math.Min(smallImg1.GetLength(0), smallImg2.GetLength(1)) );
@@ -22,11 +22,30 @@ namespace ImageStackerConsole.Alignmnet
             int yBest = 0;
             for (int yOffset = -yMax; yOffset < yMax; yOffset++)
             {
-                Console.WriteLine($"{yOffset} out of {yMax}");
+                if (yOffset % 10 == 0) { Console.WriteLine($"{yOffset} out of {yMax}"); }
+
                 for (int xOffset = -xMax; xOffset < xMax; xOffset++)
                 {
                     // TODO add ROTATION
                     ulong correlation = CalculateCrossCorrelation(smallImg1, smallImg2, xOffset, yOffset);
+                    if (correlation > bestValue)
+                    {
+                        xBest = scaleFactor * xOffset;
+                        yBest = scaleFactor * yOffset;
+                        bestValue = correlation;
+                    }
+                }
+            }
+
+
+            byte[,] medImg1 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img1))));
+            byte[,] medImg2 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img2))));
+            scaleFactor = 4;
+            for (int yOffset = yBest - scaleFactor; yOffset < yBest + scaleFactor; yOffset++)
+            {
+                for (int xOffset = xBest - scaleFactor; xOffset < xBest + scaleFactor; xOffset++)
+                {
+                    ulong correlation = CalculateCrossCorrelation(medImg1, medImg2, xOffset, yOffset);
                     if (correlation > bestValue)
                     {
                         xBest = scaleFactor * xOffset;
