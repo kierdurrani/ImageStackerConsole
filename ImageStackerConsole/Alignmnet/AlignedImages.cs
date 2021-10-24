@@ -13,7 +13,7 @@ namespace ImageStackerConsole.Alignmnet
             ImagePaths = Paths;
             OffsetParameterTable = alignmentParameters;
         }
-
+        
         public string[] GetStringRepresentation()
         {
             Console.WriteLine("Getting String Rep");

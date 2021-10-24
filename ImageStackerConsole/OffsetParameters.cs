@@ -84,9 +84,10 @@ namespace ImageStackerConsole
             // Let X be the pretransformation coordinate vector and R(t,k) the rotation & scaling matrix.
             // X' = R(t, k) * X + trans.       Hence:   X = R^-1(t, k) (X' - trans.) 
             // So the translation in the inverse transformation is R^-1(t, k) ( - trans.)
+            // Use the fact R(t,k)^[-1] = R(-t, 1/k)
 
-            double Inverted_X = - (X * Math.Cos(-Theta) + Y * Math.Sin(-Theta));
-            double Inverted_Y = - (Y * Math.Cos(-Theta) + X * Math.Sin(-Theta));
+            double Inverted_X = - 1.0/Zoom * (X * Math.Cos(-Theta) + Y * Math.Sin(-Theta));
+            double Inverted_Y = - 1.0/Zoom * (Y * Math.Cos(-Theta) - X * Math.Sin(-Theta));
 
             return new OffsetParameters(Inverted_X, Inverted_Y, -Theta, 1.0 / Zoom); // TODO, this is probably wrong
         }

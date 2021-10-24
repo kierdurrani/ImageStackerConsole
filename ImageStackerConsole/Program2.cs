@@ -24,7 +24,7 @@ namespace ImageStackerConsole
 
             System.Console.ReadKey();
 
-            
+
         }
     }
 }
