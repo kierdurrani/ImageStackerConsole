@@ -16,10 +16,10 @@ namespace ImageStackerConsole
 {
     public class OffsetParameters
     {
-        private double X { get; }
-        private double Y { get; }
-        private double Theta { get; }
-        private double Zoom { get; }
+        public double X { get; }
+        public double Y { get; }
+        public double Theta { get; }
+        public double Zoom { get; }
 
         public OffsetParameters GetIdentityTransformation()
         {
