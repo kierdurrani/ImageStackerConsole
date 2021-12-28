@@ -5,6 +5,8 @@
 
         private string[] ImagePaths;
         private IAlignmentMethod AlignmentMethod;
+        // public delegate OffsetParameters AlignPair(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar);
+
         public bool allPairs {get; set;} = false;
 
         private LoadingBar AlignmentLoadingBar;
@@ -33,7 +35,7 @@
 
                     for (int i = 0; i < OffsetParametersArray.GetLength(1); i++)
                     {
-                        System.Console.WriteLine($"STACKING ({i},{j})");
+                        System.Console.WriteLine($"ALIGNING ({i},{j})");
                         RGBImage iImage = new RGBImage(ImagePaths[i]);
                         OffsetParametersArray[j, i] = AlignmentMethod.CalculateOffsetParameters(jImage, iImage, AlignmentLoadingBar);
                     }

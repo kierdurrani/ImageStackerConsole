@@ -64,8 +64,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Alignmnet\CPPCrossCorrelation.cs" />
     <Compile Include="Alignmnet\MethodCrossCorrelation.cs" />
+    <Compile Include="Alignmnet\MethodStarAlignment.cs" />
+    <Compile Include="Alignmnet\CPPCrossCorrelation.cs" />
     <Compile Include="Alignmnet\IAlignmentMethod.cs" />
     <Compile Include="Alignmnet\AlignmentOrchestrator.cs" />
     <Compile Include="Program2.cs" />

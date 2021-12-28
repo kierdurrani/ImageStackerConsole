@@ -12,37 +12,30 @@ namespace ImageStackerConsole
 
         static void Main(string[] args)
         {           
+            // Testing import and greyscale methods
             watch.Start();
-
-
             RGBImage img = new RGBImage(@"C:\Users\Kier\Pictures\Andromeda galaxy.jpg");
-
-
             img.GetGreyscaleArray();
+            
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
-            // OffsetParameters Method1 = OffsetParameters.Compose(Param1, Param1.CalculateInverse());
-            // OffsetParameters Method2 = OffsetParameters.Compose(Param1.CalculateInverse(), Param1);
+            string[] ImagePaths = new string[] {
+                            @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1311.JPG",
+                            @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1320.JPG",
+                            @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1326.JPG"
+                        };
 
-            if (false)
-            {
-                string[] ImagePaths = new string[] {
-                                @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1311.JPG",
-                                @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1320.JPG",
-                                @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\IMG_1326.JPG"
-                            };
+            AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, new MethodCrossCorrelation());
 
-                AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, new MethodCrossCorrelation());
+            orchestrator.allPairs = false;
 
-                orchestrator.allPairs = true;
+            AlignedImages alignedImages = orchestrator.CalculateOffsetParameterTable();
 
-                AlignedImages alignedImages = orchestrator.CalculateOffsetParameterTable();
+            WriteStringArrayToFile(@"C:\Users\Kier\Pictures\OUTPUT_TEST.txt", alignedImages.GetStringRepresentation());
 
-                WriteStringArrayToFile(@"C:\Users\Kier\Pictures\OUTPUT_TEST.txt", alignedImages.GetStringRepresentation());
-
-                alignedImages.IsConsistent();
-            }
+            alignedImages.IsConsistent();
+            
 
             Console.WriteLine("Program Ended. Press any key to close.");
             Console.ReadKey();
