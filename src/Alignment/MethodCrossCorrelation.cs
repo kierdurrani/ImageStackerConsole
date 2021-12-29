@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImageStackerConsole.Alignmnet
+namespace ImageStackerConsole.Alignment
 {
     class MethodCrossCorrelation : IAlignmentMethod
     {

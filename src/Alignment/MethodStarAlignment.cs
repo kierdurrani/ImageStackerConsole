@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImageStackerConsole.Alignmnet
+namespace ImageStackerConsole.Alignment
 {
     public class MethodStarAlignment : IAlignmentMethod
     {
@@ -25,23 +25,23 @@ namespace ImageStackerConsole.Alignmnet
                     if (greyArray[y,x] > 50)
                     {
                         // TODO; this doens't work well for the case of a single outlier pixel in the 'dark' region happens to be super light
-                        int bright = greyArray[y + 1][x] + greyArray[y - 1][x] + greyArray[y][x + 1] + greyArray[y][x - 1];
-                        bright += (greyArray[y + 2][x + 2] + greyArray[y + 2][x - 2] + greyArray[y - 2][x + 2] + greyArray[y - 2][x + 2]);
+                        int bright = greyArray[y + 1, x] + greyArray[y - 1, x] + greyArray[y, x + 1] + greyArray[y, x - 1];
+                        bright += (greyArray[y + 2, x + 2] + greyArray[y + 2, x - 2] + greyArray[y - 2, x + 2] + greyArray[y - 2, x + 2]);
 
-                        int dark = greyArray[y][x - 10] + greyArray[y][x + 10] + greyArray[y + 10][x] + greyArray[y - 10][x];
-                        dark += greyArray[y + 7][x + 7] + greyArray[y + 7][x - 7] + greyArray[y - 7][x + 7] + greyArray[y - 7][x - 7];
+                        int dark = greyArray[y, x - 10] + greyArray[y, x + 10] + greyArray[y + 10, x] + greyArray[y - 10, x];
+                        dark += greyArray[y + 7, x + 7] + greyArray[y + 7, x - 7] + greyArray[y - 7, x + 7] + greyArray[y - 7, x - 7];
 
                         // float darkRatio = ((float) bright + dark )/ (bright); threshold 1.3
                         int darkRatio = bright - dark;
                         if (darkRatio > 40 * 8)
                         {
-                            starCandidates.add(new StarCoordinates(x, y));
+                           // starCandidates.add(new StarCoordinates(x, y));
                         }
                     }
                 }
             }
 
-            // TODO
+            // TODO - complete implementation
 
             return null;
         }

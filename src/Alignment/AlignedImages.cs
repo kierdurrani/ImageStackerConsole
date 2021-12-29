@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace ImageStackerConsole.Alignmnet
+namespace ImageStackerConsole.Alignment
 {
     public class AlignedImages
     {

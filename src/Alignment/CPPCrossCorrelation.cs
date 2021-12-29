@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ImageStackerConsole.Alignmnet
+namespace ImageStackerConsole.Alignment
 {
     internal class CPPCrossCorrelation //: IAlignmentMethod
     {

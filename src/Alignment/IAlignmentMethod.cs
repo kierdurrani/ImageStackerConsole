@@ -1,4 +1,4 @@
-﻿namespace ImageStackerConsole.Alignmnet
+﻿namespace ImageStackerConsole.Alignment
 {
     public interface IAlignmentMethod
     {
