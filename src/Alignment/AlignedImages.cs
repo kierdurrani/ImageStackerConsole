@@ -37,7 +37,7 @@ namespace ImageStackerConsole.Alignment
         }
 
        
-        public static AlignedImages ImplortAlignmentParameters(string FilePath)
+        public static AlignedImages ImportAlignmentParameters(string FilePath)
         {
 
             string[] lines = System.IO.File.ReadAllLines(FilePath);

@@ -8,11 +8,7 @@
         // public delegate OffsetParameters AlignPair(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar);
 
         public bool allPairs {get; set;} = false;
-
         private LoadingBar AlignmentLoadingBar;
-
-        // LoadingBar<OffsetParameters[][]>
-
 
         public AlignmentOrchestrator(string[] paths, IAlignmentMethod method)
         {
@@ -58,12 +54,5 @@
             System.Console.WriteLine("Finished Alignment.");
             return  (new AlignedImages(ImagePaths, OffsetParametersArray));
         }
-
-
-
-
-
-
-
     }
 }

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace ImageStackerConsole
 {
-    public class RGBImage
+    public class RGBImage : ICloneable
     {
 
         public byte[,,] RGBArray { get; } // [y,x,c] - color is B,G,R
@@ -49,6 +49,12 @@ namespace ImageStackerConsole
             RGBArray = array;
         }
 
+        public object Clone()
+        {
+            byte[,,] arrayClone = (byte[,,]) this.RGBArray.Clone();
+            return new RGBImage(arrayClone);
+        }
+
         public void SaveToDisk(String path)
         {
 
@@ -84,8 +90,7 @@ namespace ImageStackerConsole
                 Console.WriteLine("EXCEPTION TRYING GET BITMAP");
                 Console.WriteLine(e.GetBaseException());
                 
-            }
-            
+            }            
         }
 
         public byte[,] GetGreyscaleArray()
@@ -100,6 +105,36 @@ namespace ImageStackerConsole
                 }
             }
             return greyscale;
+        }
+
+
+        public void MakeGreenCross(int x, int y)
+        {
+            // Prevent out of bounds exception
+            if (x < 10 || x > ImageWidth - 10 || y < 10 || y > ImageHeight - 10)
+            {
+                return;
+            }
+
+            // Modify the underlying color array to have a green cross.
+            for (int i = -7; i <= 7; i++)
+            {
+
+                // On y axis
+                RGBArray[y, x + i, 0] = 0;
+                RGBArray[y, x + i, 1] = 255;
+                RGBArray[y, x + i, 2] = 0;
+
+                // One off y axis to thicken
+                RGBArray[y + 1, x + i, 0] = 0;
+                RGBArray[y + 1, x + i, 1] = 255;
+                RGBArray[y + 1, x + i, 2] = 0;
+
+                // x-axis
+                RGBArray[y + i, x + 1, 0] = 0;
+                RGBArray[y + i, x + 1, 1] = 255;
+                RGBArray[y + i, x + 1, 2] = 0;
+            }
         }
 
 

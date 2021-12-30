@@ -70,7 +70,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlignedImages.cs" />
+    <Compile Include="Alignment\AlignedImages.cs" />
     <Compile Include="Alignment\AlignmentOrchestrator.cs" />
     <Compile Include="Alignment\CPPCrossCorrelation.cs" />
     <Compile Include="Alignment\IAlignmentMethod.cs" />
