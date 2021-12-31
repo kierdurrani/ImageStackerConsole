@@ -29,10 +29,10 @@ namespace ImageStackerConsole
             // TESTING THE 
             // MethodStarAlignment
             RGBImage img1 = new RGBImage(imgDir + "IMG_1311.JPG");
-            List<StarCoordinates> coords = MethodStarAlignment.findStarCoordinates(img1);
+            List<StarCoordinates> coords = StarCoordinates.findStarCoordinates(img1);
             foreach(StarCoordinates star in coords)
             {
-                img1.MakeGreenCross(star.xCoord, star.yCoord);
+                img1.MakeGreenCross((int) star.xCoord, (int) star.yCoord);
             }
             img1.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\outtest.png");
             Console.WriteLine("Completed the star detection test");
@@ -42,11 +42,9 @@ namespace ImageStackerConsole
             // var method = new MethodCrossCorrelation();
             var method = new MethodStarAlignment();
             AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, method);
-            orchestrator.allPairs = false;
+            orchestrator.allPairs = true;
 
             AlignedImages alignedImages = orchestrator.CalculateOffsetParameterTable();
-
-
 
 
             // PROCESS ALIGMENT RESULT

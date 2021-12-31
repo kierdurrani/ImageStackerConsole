@@ -77,7 +77,25 @@ namespace ImageStackerConsole
 
            //Console.WriteLine($"DEBUG: Transform post rotation: {PostRotation_X},{PostRotation_Y}");
             return (new double[] { PostRotation_X + X, PostRotation_Y + Y } );
-        } 
+        }
+
+        public double[][] TransformCoordinatesBulk(double[][] inCoords)
+        {
+            double zcos = Zoom * Math.Cos(Theta);
+            double zsin = Zoom * Math.Sin(Theta);
+
+            double[][] output = new double[inCoords.Length][];
+            for (int index = 0; index < inCoords.Length; index++)
+            {
+                output[index] = new double[2];
+                
+                output[index][0] = (int) (+inCoords[index][0] * zcos + inCoords[index][1] * zsin) + X;
+                output[index][1] = (int) (-inCoords[index][0] * zsin + inCoords[index][1] * zcos) + Y;
+            }
+
+            return output;
+        }
+
 
         public OffsetParameters CalculateInverse()
         {            
