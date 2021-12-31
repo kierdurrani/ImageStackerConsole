@@ -152,13 +152,14 @@ namespace ImageStackerConsole.Alignment
         public static double[][] convertStarListToArray(List<StarCoordinates> starCoordinates) 
         {
             double[][] starCoordinatesOut = new double[starCoordinates.Count][];
-            StarCoordinates[] arrayIn = starCoordinates.ToArray();
 
             for (int index = 0; index < starCoordinates.Count; index++)
             {
                 starCoordinatesOut[index] = new double[2];
-                starCoordinatesOut[index][0] = arrayIn[index].xCoord;
-                starCoordinatesOut[index][1] = arrayIn[index].yCoord;
+                
+                StarCoordinates current = starCoordinates.ElementAt(index);
+                starCoordinatesOut[index][0] = current.xCoord;
+                starCoordinatesOut[index][1] = current.yCoord;
             }
             
             return starCoordinatesOut;

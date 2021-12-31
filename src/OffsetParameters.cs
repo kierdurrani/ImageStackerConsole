@@ -87,10 +87,10 @@ namespace ImageStackerConsole
             double[][] output = new double[inCoords.Length][];
             for (int index = 0; index < inCoords.Length; index++)
             {
-                output[index] = new double[2];
+                double newX = (+inCoords[index][0] * zcos + inCoords[index][1] * zsin) + this.X;
+                double newY = (-inCoords[index][0] * zsin + inCoords[index][1] * zcos) + this.Y;
                 
-                output[index][0] = (int) (+inCoords[index][0] * zcos + inCoords[index][1] * zsin) + X;
-                output[index][1] = (int) (-inCoords[index][0] * zsin + inCoords[index][1] * zcos) + Y;
+                output[index] = new double[] { newX, newY };
             }
 
             return output;

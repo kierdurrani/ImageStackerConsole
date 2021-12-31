@@ -20,6 +20,7 @@ namespace ImageStackerConsole.Alignment
             double[][] starArray1 = StarCoordinates.convertStarListToArray(starCoordinatesImg1);
             double[][] starArray2 = StarCoordinates.convertStarListToArray(starCoordinatesImg2);
             
+            
             // Best Offset Parameters found
             OffsetParameters bestParameters = null;
             int mostAlignedStars = 0;
@@ -32,16 +33,15 @@ namespace ImageStackerConsole.Alignment
                 for (int xOffset = -xMax; xOffset < xMax; xOffset += 4)
                 {
                     // Transform the coordinates of the 2nd list                    
-                    OffsetParameters currentOffsetParams = new OffsetParameters(xOffset, yOffset, 0.0, 0.0);
+                    OffsetParameters currentOffsetParams = new OffsetParameters(xOffset, yOffset, 0.0, 1.0);
 
                     double[][] transformedArray2 = currentOffsetParams.TransformCoordinatesBulk( starArray2 );
-
+        
                     int allignedStars = countAlignedStars(starArray1, transformedArray2);
                     if (allignedStars > mostAlignedStars)
                     {
                         bestParameters = currentOffsetParams;
                         mostAlignedStars = allignedStars;
-                        Console.WriteLine("Aligned: " + allignedStars + " with params: " + xOffset + "," + yOffset);
                     }
                 }
             }
@@ -60,7 +60,7 @@ namespace ImageStackerConsole.Alignment
             const int detectionRadius = 8;
 
             // Foreach star in the 2nd (transformed) array, see if there is a star in the 1st array which has very similar coords.
-            for ( int index = 0; index < coordsList2.Length ; index ++)
+            for ( int coord2index = 0; coord2index < coordsList2.Length ; coord2index ++)
             {
                 // Since coordsList1 is sorted by xCoord, we can use interval bisection in coordsList1 to quickly find
                 // the coordinate with smallest xCoord which is still within detection radius to coord2.xCoord.
@@ -73,7 +73,7 @@ namespace ImageStackerConsole.Alignment
                 {
                     // Interval Bisection: If coords2 is to the left of the half way coordinate:
                     int bisectionPoint = (upperBound + lowerBound) / 2;
-                    if (coordsList2[index][0] - coordsList1[bisectionPoint][0] < -detectionRadius)
+                    if (coordsList2[coord2index][0] - coordsList1[bisectionPoint][0] < -detectionRadius)
                     {
                         // bisection point was too big, decrease upper bound
                         upperBound = bisectionPoint;
@@ -85,17 +85,16 @@ namespace ImageStackerConsole.Alignment
                     }
                 }
 
-                for (int i = lowerBound; i < coordsList1.Length; i++)
+                for (int coord1index = lowerBound; coord1index < coordsList1.Length; coord1index++)
                 {
-                    double xMisalign = coordsList1[i][0] - coordsList2[index][0];
-                    double yMisalign = coordsList1[i][1] - coordsList2[index][1];
+                    double xMisalign = coordsList1[coord1index][0] - coordsList2[coord2index][0];
+                    double yMisalign = coordsList1[coord1index][1] - coordsList2[coord2index][1];
                     if (xMisalign > detectionRadius)
                     {
-                        // Console.WriteLine(xMisalign);
-                        break; // gone too far horizontally.
+                         break; // gone too far horizontally.
                     }
                     
-                    if( xMisalign * xMisalign  + yMisalign * yMisalign < detectionRadius * detectionRadius )
+                    if( xMisalign * xMisalign + yMisalign * yMisalign < detectionRadius * detectionRadius )
                     {
                         starAlignmentCount++;
                         break;
@@ -105,6 +104,18 @@ namespace ImageStackerConsole.Alignment
             }
             // Console.WriteLine(starAlignmentCount);
             return starAlignmentCount;
+        }
+
+        private static string getStringRep(double[] input) { 
+        
+            string output = "[";
+            foreach (double s in input) 
+            {
+                output =  output + s + ",";
+            }
+            output = output.Substring(0, output.Length - 1) + ']';
+            return output;
+
         }
     }
 }
