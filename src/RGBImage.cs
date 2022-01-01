@@ -137,6 +137,39 @@ namespace ImageStackerConsole
             }
         }
 
+        public void DrawLine(int x1, int y1, int x2, int y2, int color)
+        {
+
+            try
+            {
+                double dx = (x2 - x1);
+                double dy = (y2 - y1);
+                double distance = Math.Sqrt( dx * dx + dy * dy);
+
+                dx = dx/distance;
+                dy = dy/distance;
+
+                int t = 0;
+                int x;
+                int y;
+                while (t < distance)
+                {
+                    x = (int) (x1 + t * dx);
+                    y = (int) (y1 + t * dy);
+                    
+                    RGBArray[y, x, 0] = (byte) (color       % 255);
+                    RGBArray[y, x, 1] = (byte) (color/256   % 255);
+                    RGBArray[y, x, 2] = (byte) (color/65536 % 255);
+
+                    t++;
+                }                
+            }
+            catch {
+                Console.WriteLine("Bounds Check");
+            }
+        
+        }
+
 
     }
 }

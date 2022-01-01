@@ -38,9 +38,12 @@ namespace ImageStackerConsole
             Console.WriteLine("Completed the star detection test");
 
 
+            // img1.DrawLine(0, 0, 1000, 1000);
+            // img1.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\LineDrawTest.png");
+            
             // ALIGNMENT METHOD
             // var method = new MethodCrossCorrelation();
-            var method = new MethodStarAlignment();
+            var method = new MethodTriangles();
             AlignmentOrchestrator orchestrator = new AlignmentOrchestrator(ImagePaths, method);
             orchestrator.allPairs = true;
 
