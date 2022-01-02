@@ -53,17 +53,15 @@ namespace ImageStackerConsole
             return ( $"{Math.Round(X,1)},{Math.Round(Y, 1)},{Math.Round(Theta, 3)},{Math.Round(Zoom, 3)}");
         }
 
-        public void PrintPretty()
-        {
-            Console.WriteLine($"({(int) X},{(int) Y}),{(float) Theta},{(float) Zoom}");
-        }
-
-
         // Boolean methods for validation
         public bool IsCloseToIdentity()
         {
-            // Ensure translational mismath is less than 2 pixels, rotational offset is small in radians, etc.
-            bool b =  (Math.Abs(X) < 2.0) && (Math.Abs(Y) < 2.0) && ( Math.Abs(Theta) < 0.006) && (Math.Abs(Zoom - 1.0) < 0.006);
+            // Ensure translational mismatch is less than 2 pixels, rotational offset is small in radians, etc.
+            bool b = (Math.Abs(X) < 2.0) && 
+                     (Math.Abs(Y) < 2.0) && 
+                     ((Math.Abs(Theta) < 0.006) || ( Math.Abs(Theta) > (2.0 * Math.PI - 0.006)) ) && 
+                     (Math.Abs(Zoom - 1.0) < 0.006);
+
             return b;        
         }
 

@@ -22,8 +22,10 @@ namespace ImageStackerConsole
 
 
             // IMAGE SELECTION
-            string imgDir = @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\";
-            string[] ImagePaths = new string[] { imgDir + "IMG_1311.JPG", imgDir + "IMG_1320.JPG", imgDir + "IMG_1326.JPG" };
+            // string imgDir = @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\";
+            // string[] ImagePaths = new string[] { imgDir + "IMG_1311.JPG", imgDir + "IMG_1320.JPG", imgDir + "IMG_1326.JPG" };
+            string imgDir = @"C:\Users\Kier\Developing\ImageStackerConsole\testImages\";
+            string[] ImagePaths = new string[] { imgDir + "b.JPG", imgDir + "b2.JPG"};
 
 
             // TESTING THE 

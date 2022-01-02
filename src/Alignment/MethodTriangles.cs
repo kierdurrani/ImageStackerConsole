@@ -9,6 +9,8 @@ namespace ImageStackerConsole.Alignment
         public OffsetParameters CalculateOffsetParameters(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar)
         {
             Console.WriteLine("--------------- CalculateOffsetParameters USING TRIANGLE METHOD --------------");
+            
+            // FIND STARS & TRIANGLES OF STARS IN THE IMGES.
             Console.WriteLine("Finding Stars in image");
             List<StarCoordinates> img1stars = StarCoordinates.findStarCoordinates(rgbImg1);
             List<StarCoordinates> img2stars = StarCoordinates.findStarCoordinates(rgbImg2);
@@ -22,12 +24,11 @@ namespace ImageStackerConsole.Alignment
             // Draw triangles for testing purposes.
             RGBImage temp = (RGBImage)rgbImg1.Clone();
             foreach (Triangle t in Triangles1)
-            { 
+            {
                 t.DrawTriangle(temp);
-
             }
             temp.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\testImages\TrianglesOUT.JPG");
-
+            rgbImg1.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\testImages\NoTringls.JPG");
 
             // PUT TRIANGLES IN BUCKETS BASED OFF ANGLE SIZES TO ALLOW EASY IDENTIFICATION OF SIMILAR TRIANGLES.
             Console.WriteLine("Put Triangles in buckets");
@@ -68,141 +69,136 @@ namespace ImageStackerConsole.Alignment
             }
 
 
-            // IDENTIFY SIMILAR TRIANGES - ones in adjacent ot corresponding buckets could be similar
+            // IDENTIFY SIMILAR TRIANGES - these can be in adjacent or same buckets
             Console.WriteLine("IDENTIFYING SIMILAR TRIANGLES");
             List<SimilarTriangles> similarTriangleList = new List<SimilarTriangles>();
             for (int largestAngle = 0; largestAngle < TriangleBuckets1.Length; largestAngle++)
             {
                 for (int secondAngle = 0; secondAngle < TriangleBuckets1[largestAngle].Length; secondAngle++)
                 {
+
+                    // Foreach triangle, check for similar triangles from adjacent buckets
                     foreach (Triangle t1 in TriangleBuckets1[largestAngle][secondAngle])
                     {
-                        try
+                        // Check adjacent buckets
+                        for (int i = -1; i <= 1; i++)
                         {
-                            // Check for similar triangles from adjacent bucket
-                            for (int i = -1; i <= 1; i++)
+                            for (int j = -1; j <= 1; j++)
                             {
-                                for (int j = -1; j <= 1; j++)
+                                // bounds check
+                                if((largestAngle + i > 0) && ((largestAngle + i < TriangleBuckets1.Length)) && 
+                                   (secondAngle  + j > 0) && (secondAngle + j < TriangleBuckets1[largestAngle + i].Length) )
                                 {
-                                    // bounds check
-                                    if ((largestAngle + i > 0) && ((largestAngle + i < TriangleBuckets1.Length)))
-                                    {
-                                        if ((secondAngle + j > 0) && (secondAngle + j < TriangleBuckets1[largestAngle + i].Length))
-                                        {
-                                            AppendSimilarTriangle(t1, TriangleBuckets2[largestAngle + i][secondAngle + j], tolerance, similarTriangleList);
-                                        }
-                                    }
-
+                                    AppendSimilarTriangle(t1, TriangleBuckets2[largestAngle + i][secondAngle + j], tolerance, similarTriangleList);    
                                 }
                             }
-
-                        }
-                        catch
-                        {
-                            Console.WriteLine("EEEP");
-                            Console.WriteLine(secondAngle);
-
                         }
                     }
+
                 }
             }
 
-            Console.WriteLine($"WE HAVE FOUND: ${similarTriangleList.Count} SIMILAR TRIANGLES OUT OF: ${Triangles1.Length} & ${Triangles1.Length}");
+            Console.WriteLine($"WE HAVE FOUND: {similarTriangleList.Count} SIMILAR TRIANGLES OUT OF: {Triangles1.Length} & {Triangles1.Length}");
 
+            // USE EACH PAIR SIMILAR TRIANGLES TO GENERATE A LIST OF POSSIBLE OFFSET PARAMETERS (i.e. given the triangles are similar, what transform maps one to the other)
             List<OffsetParameters> hypotheticalOffsets = new List<OffsetParameters>();
             foreach (SimilarTriangles similarTriangles in similarTriangleList)
             {
-                // Hypothetical Offsets:
+                // Hypothetical Offsets: - This is what you apply to the 2nd image to align with first (?)
                 double dx = similarTriangles.t1.centre.xCoord - similarTriangles.t2.centre.xCoord;
                 double dy = similarTriangles.t1.centre.yCoord - similarTriangles.t2.centre.yCoord;
 
-                double zoom = similarTriangles.t2.length1 / similarTriangles.t1.length1;
+                double zoom = similarTriangles.t1.length1 / similarTriangles.t2.length1;
 
                 //  To find the rotation -> take the longest vector from the centre of the triangle to vertex as a reference vector.
                 double largestMedianBearing1 = Math.Atan2(similarTriangles.t1.largestSemiMedian.yCoord, similarTriangles.t1.largestSemiMedian.xCoord);
                 double largestMedianBearing2 = Math.Atan2(similarTriangles.t2.largestSemiMedian.yCoord, similarTriangles.t2.largestSemiMedian.xCoord);
-
                 double rotation = largestMedianBearing1 - largestMedianBearing2;
 
-                
-                if (Math.Abs(zoom - 1.0) < 0.05)
-                {
-                    OffsetParameters hypotheticalOffset = new OffsetParameters(dx, dy, rotation, zoom);
-                    hypotheticalOffsets.Add(hypotheticalOffset);
-                }
-
+                // Add this to the list of possible offsets
+                OffsetParameters hypotheticalOffset = new OffsetParameters(dx, dy, rotation, zoom);
+                hypotheticalOffsets.Add(hypotheticalOffset);
 
             }
 
-            // TODO: See if there is a consensus amongst the hypotheticalOffsetParameter list to obtain the actual offset parameters.
-            // Method: Sort the list based off of some order.
-            // For each hypotherical parameter, see how many other parameters are 'close enough' to said parameter.
-            // Since it is sorted, we can do this in approximately O(n log n);
+
+            // FIND THE CORRECT OFFSET PARMATERS BY SEEING WHICH hypotheticalOffsetParameter AGREE WITH THE MOST OTHERS. (i.e. aligns most triangles).
+            // Method: Sort the hypotherical list for O(n log n) complexity
+            // For each hypotherical parameter, see how many other parameters are 'close enough' to said parameterm, and maximise this.
             OffsetParameters[] possOffsets = hypotheticalOffsets.ToArray();
             Array.Sort(possOffsets);
-            double transTolerance = 3.0;
+
+            const double transTolerance = 3.0;
+            const double rotTolerance = 0.002;
+            const double zoomTolerance = 0.001;
             
             OffsetParameters bestOffset = null;
-            int votes = 0;
+            int mostVotes = 0;
+
             for (int i = 0; i < possOffsets.Length; i++)
             {
                 int thisvotes = 0;
 
-                int j = i - 1;
-                while (j >= 0)
+                for (int j = i - 1; j >= 0; j--)
                 {
                     // Translated too far left
                     if (possOffsets[j].X + transTolerance < possOffsets[i].X) { break; }
 
                     // Check whether this pair of Offsets are within tollerance.
+                    double dTheta = Math.Abs(possOffsets[j].Theta - possOffsets[i].Theta);
                     if ((Math.Abs(possOffsets[j].X - possOffsets[i].X) < transTolerance) &&
                         (Math.Abs(possOffsets[j].Y - possOffsets[i].Y) < transTolerance) &&
-                        (Math.Abs(possOffsets[j].Theta - possOffsets[i].Theta) < 0.001) &&
-                        (Math.Abs(possOffsets[j].Zoom - possOffsets[i].Zoom) < 0.001))
+                        ( (dTheta < rotTolerance) || (dTheta > (2.0 * Math.PI - rotTolerance)) ) && 
+                        (Math.Abs(possOffsets[j].Zoom - possOffsets[i].Zoom) < zoomTolerance))
                     {
                         thisvotes++;
                     }
-                    j--;
                 }
-
-                j = i + 1;
-                while (j < possOffsets.Length)
+                for (int j = i + 1; j < possOffsets.Length; j++)
                 {
                     // Translated too far right
                     if (possOffsets[j].X > possOffsets[i].X + transTolerance) { break; }
 
                     // Check whether this pair of Offsets are within tollerance.
+                    double dTheta = Math.Abs(possOffsets[j].Theta - possOffsets[i].Theta);
                     if ((Math.Abs(possOffsets[j].X - possOffsets[i].X) < transTolerance) &&
                         (Math.Abs(possOffsets[j].Y - possOffsets[i].Y) < transTolerance) &&
-                        (Math.Abs(possOffsets[j].Zoom - possOffsets[i].Zoom) < 0.001) &&
-                        (Math.Abs(possOffsets[j].Zoom - possOffsets[i].Zoom) < 0.001)) 
+                        ((dTheta < rotTolerance) || (dTheta > (2.0 * Math.PI - rotTolerance))) &&
+                        (Math.Abs(possOffsets[j].Zoom - possOffsets[i].Zoom) < zoomTolerance))
                     {
                         thisvotes++;
                     }
-                    j++;
                 }
-
-                if (thisvotes > votes)
+                if (thisvotes > mostVotes)
                 {
                     bestOffset = possOffsets[i];
-                    votes = thisvotes;
+                    mostVotes = thisvotes;
                 }
             }
 
-
+            // WRITE DEBUG INFO TO FILES. return BestOffset.
             DateTime foo = DateTime.Now;
             long unixTime = ((DateTimeOffset)foo).ToUnixTimeSeconds();
 
             hypotheticalOffsets.Sort();
             String[] hypOffsets = new String[hypotheticalOffsets.Count];
             int ii = 0;
-            foreach  ( OffsetParameters offset in hypotheticalOffsets)
+            foreach (OffsetParameters offset in hypotheticalOffsets)
             {
                 hypOffsets[ii++] = offset.GetStringRepresentation();
             }
 
             // Program.WriteStringArrayToFile($"C:\\Users\\Kier\\Developing\\ImageStackerConsole\\testImages\\TriTest_{unixTime}.txt", hypOffsets);
-
+            if (bestOffset == null)
+            {
+                // Handle Failure
+                Console.WriteLine("FAILED TO FIND ALIGNMENT");
+                Console.WriteLine("DEBUG DATA: ");
+                Console.WriteLine($"WE FOUND: {similarTriangleList.Count} SIMILAR TRIANGLES OUT OF: {Triangles1.Length} & {Triangles1.Length}");
+                Console.WriteLine($"SIMILAR TRIANGLES OUT OF: ${Triangles1.Length} & ${Triangles1.Length}");
+                throw new AlignmentFailedException("Could not find a way of aligning more than 1 triangle");
+            }
+            Console.WriteLine($"There were {mostVotes} votes for this alignment.");
             return bestOffset;
         }
 
@@ -302,7 +298,7 @@ namespace ImageStackerConsole.Alignment
         public StarCoordinates point2 { get; }
         public StarCoordinates point3 { get; }
 
-        public StarCoordinates largestSemiMedian { get;  }
+        public StarCoordinates largestSemiMedian { get; }
 
         public StarCoordinates centre { get; }
 
@@ -354,12 +350,9 @@ namespace ImageStackerConsole.Alignment
             angle3 = angles[0];
 
             // largestSemiMedian represents the largest vector between the centre and a vertex.
-            double distance = 0.0;
-            if (StarCoordinates.Distance(point1, centre) > distance)
-            {
-                distance = StarCoordinates.Distance(point1, centre);
-                largestSemiMedian = new StarCoordinates(point1, centre);
-            }
+            double distance = StarCoordinates.Distance(point1, centre);
+            largestSemiMedian = new StarCoordinates(point1, centre);
+            
             if (StarCoordinates.Distance(point2, centre) > distance)
             {
                 distance = StarCoordinates.Distance(point2, centre);
@@ -367,11 +360,8 @@ namespace ImageStackerConsole.Alignment
             }
             if (StarCoordinates.Distance(point3, centre) > distance)
             {
-                distance = StarCoordinates.Distance(point3, centre);
                 largestSemiMedian = new StarCoordinates(point3, centre);
             }
-
-
 
         }
 
