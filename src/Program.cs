@@ -51,7 +51,7 @@ namespace ImageStackerConsole
 
 
             // PROCESS ALIGMENT RESULT
-            WriteStringArrayToFile(@"C:\Users\Kier\Pictures\OUTPUT_TEST.txt", alignedImages.GetStringRepresentation());
+            WriteStringArrayToFile(@"C:\Users\Kier\Developing\ImageStackerConsole\testImages\AlignmentsFound_TEST.txt", alignedImages.GetStringRepresentation());
 
             alignedImages.IsConsistent();
 

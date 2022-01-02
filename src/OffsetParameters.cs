@@ -14,7 +14,7 @@ using System;
 
 namespace ImageStackerConsole
 {
-    public class OffsetParameters
+    public class OffsetParameters : IComparable
     {
         public double X { get; }
         public double Y { get; }
@@ -30,7 +30,11 @@ namespace ImageStackerConsole
         {
             this.X = x;
             this.Y = y;
-            this.Theta = theta;
+            
+            while (theta < 0) { theta =  + 2.0 * Math.PI; }
+            this.Theta = theta % (2.0 * Math.PI); // range reduction
+            
+            // if (Zoom == 0) { throw  new ArgumentOutOfRangeException(); }
             this.Zoom = zoom;
         }
 
@@ -46,14 +50,20 @@ namespace ImageStackerConsole
 
         public string GetStringRepresentation()
         {
-            return (X + "," + Y + "," + Theta + "," + Zoom);
+            return ( $"{Math.Round(X,1)},{Math.Round(Y, 1)},{Math.Round(Theta, 3)},{Math.Round(Zoom, 3)}");
         }
+
+        public void PrintPretty()
+        {
+            Console.WriteLine($"({(int) X},{(int) Y}),{(float) Theta},{(float) Zoom}");
+        }
+
 
         // Boolean methods for validation
         public bool IsCloseToIdentity()
         {
             // Ensure translational mismath is less than 2 pixels, rotational offset is small in radians, etc.
-            bool b =  Math.Abs(X) < 2.0 && Math.Abs(Y) < 2.0 && Math.Abs(Theta) < 0.005 && Math.Abs(Zoom - 1.0) < 0.02;
+            bool b =  (Math.Abs(X) < 2.0) && (Math.Abs(Y) < 2.0) && ( Math.Abs(Theta) < 0.006) && (Math.Abs(Zoom - 1.0) < 0.006);
             return b;        
         }
 
@@ -123,6 +133,11 @@ namespace ImageStackerConsole
             return new OffsetParameters(ComposedX, ComposedY, ComposedAngle, ComposedZoom);
         }
 
-
+        public int CompareTo(object obj)
+        {
+            // return (int) (1000.0 * (Zoom - ((OffsetParameters) obj).Zoom));
+            int diff = (int) (X - ((OffsetParameters) obj).X);
+            return diff;
+        }
     }
 }

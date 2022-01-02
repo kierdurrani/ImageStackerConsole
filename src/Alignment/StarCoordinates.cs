@@ -17,6 +17,12 @@ namespace ImageStackerConsole.Alignment
             yCoord = yValue;
         }
 
+        public StarCoordinates(StarCoordinates end, StarCoordinates start)
+        {
+            xCoord = end.xCoord - start.xCoord;
+            yCoord = end.yCoord - start.yCoord;
+        }
+
         public int CompareTo(Object obj)
         {
             return (int) (xCoord - ((StarCoordinates) obj).xCoord);
@@ -32,7 +38,7 @@ namespace ImageStackerConsole.Alignment
 
         public static List<StarCoordinates> findStarCoordinates(RGBImage rgbImage)
         {
-
+            Console.WriteLine("finding stars");
             List<StarCoordinates> starCandidates = new List<StarCoordinates>();
             byte[,] greyArray = rgbImage.GetGreyscaleArray();
 
@@ -72,6 +78,7 @@ namespace ImageStackerConsole.Alignment
             // Group together stars which are close together.
             List<List<StarCoordinates>> listsOfEquivalentStars = new List<List<StarCoordinates>>();
 
+            // TODO - improve asymptotic complexity
             while (starCandidates.Count > 0)
             {
                 // Create a new equivalence class for the first star in the list of star candidates.
