@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ImageStackerConsole
@@ -15,33 +16,43 @@ namespace ImageStackerConsole
 
         public RGBImage(string path)
         {
-            Bitmap img = new Bitmap(path); // TODO - try/catch
 
             // Uses the method: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.bitmap.lockbits
             // Locking creates a buffer in unmanaged memory which is faster to read and manipulate.
-            // Lock bitmap to BitmapData class, copy into the PixelByteArray, then copy into correct shape array
+            // Lock bitmap to BitmapData class, copy into the bitmapByteArray, then copy into correct shape array
 
-            Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
-            // Console.WriteLine( "DEBUG: " + img.PixelFormat);
-            BitmapData bmpData = img.LockBits(rect, ImageLockMode.ReadOnly, img.PixelFormat);
+            Bitmap imgBitmap = new Bitmap(path); // TODO - try/catch
 
+            Rectangle rect = new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height);
+            BitmapData bmpData = imgBitmap.LockBits(rect, ImageLockMode.ReadOnly, imgBitmap.PixelFormat);
+                        
+            RGBArray = new byte[imgBitmap.Height, imgBitmap.Width, 3];
+
+            byte[] bitmapByteArray = new byte[Math.Abs(bmpData.Stride) * imgBitmap.Height];
+            Marshal.Copy(bmpData.Scan0, bitmapByteArray, 0, Math.Abs(bmpData.Stride) * imgBitmap.Height);
             
-            RGBArray = new byte[img.Height, img.Width, 3];
-
-            byte[] PixelByteArray = new byte[Math.Abs(bmpData.Stride) * img.Height];
-            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, PixelByteArray, 0, Math.Abs(bmpData.Stride) * img.Height);
-
-            int BytePosition = 0;
-            for (int y = 0; y < img.Height ; y++)
-            {
-                for (int x = 0; x < img.Width; x++)
+            
+            for (int y = 0; y < imgBitmap.Height ; y++)
+            {                
+                for (int x = 0; x < imgBitmap.Width; x++)
                 {
-                    RGBArray[y, x, 0] = PixelByteArray[BytePosition++];  // B
-                    RGBArray[y, x, 1] = PixelByteArray[BytePosition++];  // G
-                    RGBArray[y, x, 2] = PixelByteArray[BytePosition++];  // R
+                    int byteIndex = y * bmpData.Stride + 3 * x;
+                    RGBArray[y, x, 0] = bitmapByteArray[byteIndex    ];  // B
+                    RGBArray[y, x, 1] = bitmapByteArray[byteIndex + 1];  // G
+                    RGBArray[y, x, 2] = bitmapByteArray[byteIndex + 2];  // R
                 }
             }
 
+            imgBitmap.UnlockBits(bmpData);
+
+        }
+
+        private static byte[] converterDemo(Image x)
+        {
+            ImageConverter _imageConverter = new ImageConverter();
+            byte[] xByte = (byte[])_imageConverter.ConvertTo(x, typeof(byte[]));
+            
+            return xByte;
         }
 
         public RGBImage(byte[,,] array)
