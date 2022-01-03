@@ -10,13 +10,10 @@ namespace ImageStackerConsole
     class Program
     {
         static Stopwatch watch = new System.Diagnostics.Stopwatch();
-
         static void Main(string[] args)
-        {           
+        {
             // Testing import and greyscale methods
             watch.Start();
-            RGBImage img = new RGBImage(@"C:\Users\Kier\Pictures\Andromeda galaxy.jpg");
-            img.GetGreyscaleArray();
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
@@ -25,24 +22,17 @@ namespace ImageStackerConsole
             // string imgDir = @"C:\Users\Kier\Developing\Space Image Stack Project\PICTURE LIBRARY\282CANON\";
             // string[] ImagePaths = new string[] { imgDir + "IMG_1311.JPG", imgDir + "IMG_1320.JPG", imgDir + "IMG_1326.JPG" };
             string imgDir = @"C:\Users\Kier\Developing\ImageStackerConsole\testImages\";
-            string[] ImagePaths = new string[] { imgDir + "b.JPG", imgDir + "b2.JPG"};
+            string[] ImagePaths = new string[] { imgDir + "in1.JPG", imgDir + "b2.JPG" };
 
 
-            // TESTING THE 
-            // MethodStarAlignment
-            RGBImage img1 = new RGBImage(imgDir + "IMG_1311.JPG");
-            List<StarCoordinates> coords = StarCoordinates.findStarCoordinates(img1);
-            foreach(StarCoordinates star in coords)
-            {
-                img1.MakeGreenCross((int) star.xCoord, (int) star.yCoord);
-            }
-            img1.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\outtest.png");
-            Console.WriteLine("Completed the star detection test");
+            // TESTING THE STAR DETECTION METHOD
+            // StarDetectionTest(new RGBImage(imgDir + "IMG_1311.JPG"), @"C:\Users\Kier\Developing\ImageStackerConsole\outtest.png");
+            StarDetectionTest(new RGBImage(imgDir + "b2.JPG"), @"C:\Users\Kier\Developing\ImageStackerConsole\outtest.png");
 
 
             // img1.DrawLine(0, 0, 1000, 1000);
             // img1.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\LineDrawTest.png");
-            
+
             // ALIGNMENT METHOD
             // var method = new MethodCrossCorrelation();
             var method = new MethodTriangles();
@@ -59,6 +49,17 @@ namespace ImageStackerConsole
 
             Console.WriteLine("Program Ended. Press any key to close.");
             Console.ReadKey();
+        }
+
+        private static void StarDetectionTest(RGBImage img1, String OutPath)
+        {
+            List<StarCoordinates> coords = StarCoordinates.findStarCoordinates(img1);
+            foreach (StarCoordinates star in coords)
+            {
+                img1.MakeGreenCross((int)star.xCoord, (int)star.yCoord);
+            }
+            img1.SaveToDisk(OutPath);
+            Console.WriteLine("Completed the star detection test");
         }
 
         public static void WriteStringArrayToFile(String filePath, String[] data)

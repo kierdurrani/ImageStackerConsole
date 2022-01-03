@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ImageStackerConsole.Alignment
@@ -27,6 +28,18 @@ namespace ImageStackerConsole.Alignment
         {
             return (int) (xCoord - ((StarCoordinates) obj).xCoord);
         }
+
+        private int CompareTo2(StarCoordinates b)
+        {
+            return (int) ((xCoord * xCoord + yCoord * yCoord) - (b.xCoord * b.xCoord + b.yCoord * b.yCoord));
+            
+        }
+
+        public String GetStringRep()
+        {
+            return $"({xCoord},{yCoord})";
+        }
+
 
         public static double Distance(StarCoordinates coordinates1, StarCoordinates coordinates2)
         {
@@ -79,6 +92,10 @@ namespace ImageStackerConsole.Alignment
             List<List<StarCoordinates>> listsOfEquivalentStars = new List<List<StarCoordinates>>();
 
             // TODO - improve asymptotic complexity
+            //Stopwatch watch = new Stopwatch();
+            //watch.Start();
+            //starCandidates.Sort(delegate(StarCoordinates a, StarCoordinates b)  { return a.CompareTo2(b); } );
+
             while (starCandidates.Count > 0)
             {
                 // Create a new equivalence class for the first star in the list of star candidates.
@@ -118,7 +135,8 @@ namespace ImageStackerConsole.Alignment
 
                 }
             }
-
+            //watch.Stop();
+            //Console.WriteLine($"Execution Time For Star Cull: {watch.ElapsedMilliseconds} ms");
             // For each group of coordinates which represent the same star, calculate the average position of the brightest pts.
             List<StarCoordinates> starCoordinates = new List<StarCoordinates>();
             foreach (List<StarCoordinates> equivalentStars in listsOfEquivalentStars)

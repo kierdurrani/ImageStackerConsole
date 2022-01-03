@@ -75,9 +75,7 @@ namespace ImageStackerConsole.Alignment
                         isConsistent = false;
                         Console.WriteLine($"Not consistent inverse for {(i,j)}");
                     }
-                    
-
-               
+                                   
                     // Check for the triangle inequality
                     for (int k = 0; k < OffsetParameterTable.GetLength(0); k++)
                     {

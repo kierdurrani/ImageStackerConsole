@@ -13,7 +13,6 @@ namespace ImageStackerConsole
         public int ImageHeight { get { return RGBArray.GetLength(0); } }
         public int ImageWidth { get { return RGBArray.GetLength(1); } }
 
-
         public RGBImage(string path)
         {
 
@@ -45,14 +44,6 @@ namespace ImageStackerConsole
 
             imgBitmap.UnlockBits(bmpData);
 
-        }
-
-        private static byte[] converterDemo(Image x)
-        {
-            ImageConverter _imageConverter = new ImageConverter();
-            byte[] xByte = (byte[])_imageConverter.ConvertTo(x, typeof(byte[]));
-            
-            return xByte;
         }
 
         public RGBImage(byte[,,] array)
@@ -118,7 +109,6 @@ namespace ImageStackerConsole
             return greyscale;
         }
 
-
         public void MakeGreenCross(int x, int y)
         {
             // Prevent out of bounds exception
@@ -150,7 +140,6 @@ namespace ImageStackerConsole
 
         public void DrawLine(int x1, int y1, int x2, int y2, int color)
         {
-
             try
             {
                 double dx = (x2 - x1);
