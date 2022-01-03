@@ -31,7 +31,7 @@ namespace ImageStackerConsole
             this.X = x;
             this.Y = y;
             
-            while (theta < 0) { theta =  + 2.0 * Math.PI; }
+            while (theta < 0) { theta +=  + 2.0 * Math.PI; }
             this.Theta = theta % (2.0 * Math.PI); // range reduction
             
             // if (Zoom == 0) { throw  new ArgumentOutOfRangeException(); }
@@ -57,8 +57,8 @@ namespace ImageStackerConsole
         public bool IsCloseToIdentity()
         {
             // Ensure translational mismatch is less than 2 pixels, rotational offset is small in radians, etc.
-            bool b = (Math.Abs(X) < 2.0) && 
-                     (Math.Abs(Y) < 2.0) && 
+            bool b = (Math.Abs(X) < 4.0) && 
+                     (Math.Abs(Y) < 4.0) && 
                      ((Math.Abs(Theta) < 0.006) || ( Math.Abs(Theta) > (2.0 * Math.PI - 0.006)) ) && 
                      (Math.Abs(Zoom - 1.0) < 0.006);
 
@@ -73,6 +73,7 @@ namespace ImageStackerConsole
         public static bool TriangleEquality(OffsetParameters first, OffsetParameters second, OffsetParameters third)
         {
             OffsetParameters total = Compose(Compose(first, second), third.CalculateInverse());
+            if (!total.IsCloseToIdentity()) { Console.WriteLine($"THIS IS NOT CLOSE TO IDENTITY: {total.GetStringRepresentation()}"); }
             return total.IsCloseToIdentity();
         }
 
@@ -80,12 +81,13 @@ namespace ImageStackerConsole
         public double[] TransformCoordinates(double PreTransform_X, double PreTransform_Y) 
         {
             //Console.WriteLine($"DEBUG: Transform in: {PreTransform_X},{PreTransform_Y}");
-            double PostRotation_X = Zoom * (PreTransform_X * Math.Cos(Theta) + PreTransform_Y * Math.Sin(Theta));
-            double PostRotation_Y = Zoom * (PreTransform_Y * Math.Cos(Theta) - PreTransform_X * Math.Sin(Theta));
+            double PostRotation_X = Zoom * (+ PreTransform_X * Math.Cos(Theta) + PreTransform_Y * Math.Sin(Theta));
+            double PostRotation_Y = Zoom * (- PreTransform_X * Math.Sin(Theta) + PreTransform_Y * Math.Cos(Theta) );
 
            //Console.WriteLine($"DEBUG: Transform post rotation: {PostRotation_X},{PostRotation_Y}");
             return (new double[] { PostRotation_X + X, PostRotation_Y + Y } );
         }
+
 
         public double[][] TransformCoordinatesBulk(double[][] inCoords)
         {
