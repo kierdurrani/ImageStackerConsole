@@ -6,7 +6,7 @@ namespace ImageStackerConsole.Alignment
     public class AlignedImages
     {
         public string[] ImagePaths { get; }
-        OffsetParameters[,] OffsetParameterTable { get; }
+        public OffsetParameters[,] OffsetParameterTable { get; }
 
         public AlignedImages(string[] Paths, OffsetParameters[,] alignmentParameters)
         {

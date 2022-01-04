@@ -89,6 +89,8 @@
     <Compile Include="OffsetParameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stacking\StandardStack.cs" />
+    <Compile Include="Stacking\IStackingMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

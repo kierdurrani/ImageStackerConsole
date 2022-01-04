@@ -29,12 +29,6 @@ namespace ImageStackerConsole.Alignment
             return (int) (xCoord - ((StarCoordinates) obj).xCoord);
         }
 
-        private int CompareTo2(StarCoordinates b)
-        {
-            return (int) ((xCoord * xCoord + yCoord * yCoord) - (b.xCoord * b.xCoord + b.yCoord * b.yCoord));
-            
-        }
-
         public String GetStringRep()
         {
             return $"({xCoord},{yCoord})";

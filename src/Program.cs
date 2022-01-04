@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using ImageStackerConsole.Alignment;
+using ImageStackerConsole.Stacking;
 
 namespace ImageStackerConsole
 {
@@ -27,7 +29,7 @@ namespace ImageStackerConsole
 
             // TESTING THE STAR DETECTION METHOD
             // StarDetectionTest(new RGBImage(imgDir + "IMG_1311.JPG"), @"C:\Users\Kier\Developing\ImageStackerConsole\outtest.png");
-            StarDetectionTest(new RGBImage(imgDir + "b2.JPG"), @"C:\Users\Kier\Developing\ImageStackerConsole\outtest.png");
+            StarDetectionTest(new RGBImage(imgDir + "b2.JPG"), @"C:\Users\Kier\Developing\ImageStackerConsole\testImages\OUT-StarDetectionTest.png");
 
 
             // img1.DrawLine(0, 0, 1000, 1000);
@@ -46,6 +48,12 @@ namespace ImageStackerConsole
             WriteStringArrayToFile(@"C:\Users\Kier\Developing\ImageStackerConsole\testImages\AlignmentsFound_TEST.txt", alignedImages.GetStringRepresentation());
 
             alignedImages.IsConsistent();
+
+
+            // Stacking
+            Bitmap inMap = new Bitmap(imgDir + "b2.JPG");
+            Bitmap outmap = StandardStack.TransformImage( inMap, alignedImages.OffsetParameterTable[0, 1]);
+            outmap.Save(imgDir + "transformedOUT.png", ImageFormat.Png);
 
             Console.WriteLine("Program Ended. Press any key to close.");
             Console.ReadKey();

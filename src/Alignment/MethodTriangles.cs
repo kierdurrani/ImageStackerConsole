@@ -8,7 +8,7 @@ namespace ImageStackerConsole.Alignment
         public static int count = 1;
         public OffsetParameters CalculateOffsetParameters(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar)
         {
-            Console.WriteLine("--------------- CalculateOffsetParameters USING TRIANGLE METHOD --------------");
+            Console.WriteLine("--------------- CalculateOffsetParameters() USING TRIANGLE METHOD --------------");
             
             // FIND STARS & TRIANGLES OF STARS IN THE IMGES.
             Console.WriteLine("Finding Stars in image");
@@ -21,20 +21,6 @@ namespace ImageStackerConsole.Alignment
             Array.Sort(Triangles1);
             Array.Sort(Triangles2);
 
-            // Draw triangles for testing purposes.
-            RGBImage temp = (RGBImage)rgbImg1.Clone();
-            foreach (Triangle t in Triangles1)
-            {
-                t.DrawTriangle(temp);
-            }
-            foreach (StarCoordinates t in img1stars)
-            {
-                temp.MakeGreenCross((int) t.xCoord, (int) t.yCoord);
-            }
-            temp.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\testImages\TrianglesOUT" + count++ + ".JPG");
-            rgbImg1.SaveToDisk(@"C:\Users\Kier\Developing\ImageStackerConsole\testImages\NoTringls.JPG");
-
-            // PUT TRIANGLES IN BUCKETS BASED OFF ANGLE SIZES TO ALLOW EASY IDENTIFICATION OF SIMILAR TRIANGLES.
             Console.WriteLine("Put Triangles in buckets");
             const double degreesInARadian = 180.0 / Math.PI;
             const double angleSimilarityTolerance = 0.75 / degreesInARadian; // How much can two angles differ by to still be considered similar? 
@@ -105,19 +91,10 @@ namespace ImageStackerConsole.Alignment
             Console.WriteLine($"WE HAVE FOUND: {similarTriangleList.Count} SIMILAR TRIANGLES OUT OF: {Triangles1.Length} & {Triangles1.Length}");
 
             // USE EACH PAIR SIMILAR TRIANGLES TO GENERATE A LIST OF POSSIBLE OFFSET PARAMETERS (i.e. given the triangles are similar, what transform maps one to the other)
-
-            // Debug method
-            StarCoordinates TransformStarCoords(OffsetParameters offset, StarCoordinates starCoords)
-            {
-                double[] dub = offset.TransformCoordinates(starCoords.xCoord, starCoords.yCoord);
-                return new StarCoordinates(dub[0], dub[1]);
-            }
-
             List<OffsetParameters> hypotheticalOffsets = new List<OffsetParameters>();
             foreach (SimilarTriangles similarTriangles in similarTriangleList)
             {
-                // Hypothetical Offsets: - This is what you apply to the 2nd image to align with first (?)
-
+                // Hypothetical Offsets: - This is what you apply to the 2nd image to align with first.
                 double zoom = similarTriangles.t1.length1 / similarTriangles.t2.length1;
 
                 //  To find the rotation -> take the longest vector from the centre of the triangle to vertex as a reference vector.
@@ -125,13 +102,9 @@ namespace ImageStackerConsole.Alignment
                 double largestMedianBearing2 = Math.Atan2(similarTriangles.t2.largestSemiMedian.yCoord, similarTriangles.t2.largestSemiMedian.xCoord);
                 double rotation = largestMedianBearing1 - largestMedianBearing2;
 
-
                 // An OffsetParam applies its rotation/zoom before it applies the translation.
                 // So, in order to find the translation of the offset (using the fact the centre of the triangle is the same point in different coords)
                 // R x_2 + offset = x_1    ->   offset = x_1 - R x_2
-
-                rotation = -rotation;
-
                 double PostRotation_X = zoom * (+ similarTriangles.t2.centre.xCoord * Math.Cos(rotation) + similarTriangles.t2.centre.yCoord * Math.Sin(rotation));
                 double PostRotation_Y = zoom * (- similarTriangles.t2.centre.xCoord * Math.Sin(rotation) + similarTriangles.t2.centre.yCoord * Math.Cos(rotation));
 
@@ -142,16 +115,7 @@ namespace ImageStackerConsole.Alignment
                 OffsetParameters hypotheticalOffset = new OffsetParameters(dx, dy, rotation, zoom);
                 hypotheticalOffsets.Add(hypotheticalOffset);
 
-                // Attempt verification
-                string trans = hypotheticalOffset.GetStringRepresentation();
-                
-                string from = similarTriangles.t2.centre.GetStringRep();
-                string to = TransformStarCoords(hypotheticalOffset, similarTriangles.t2.centre).GetStringRep();
-                string target = similarTriangles.t1.centre.GetStringRep();
-
-                //Console.WriteLine($"Transfrom mapped: {from} -> {to} targeting {target} using transform {trans}");
             }
-
 
 
             // FIND THE CORRECT OFFSET PARMATERS BY SEEING WHICH hypotheticalOffsetParameter AGREES WITH THE MOST OTHERS. (i.e. aligns most triangles).
@@ -161,7 +125,7 @@ namespace ImageStackerConsole.Alignment
             Array.Sort(possOffsets);
 
             const double transTolerance = 2.0;
-            const double rotTolerance = 0.002;
+            const double rotTolerance = 0.001;
             const double zoomTolerance = 0.001;
             
             OffsetParameters bestOffset = null;
@@ -208,19 +172,7 @@ namespace ImageStackerConsole.Alignment
                 }
             }
 
-            // WRITE DEBUG INFO TO FILES. return BestOffset.
-            DateTime foo = DateTime.Now;
-            long unixTime = ((DateTimeOffset)foo).ToUnixTimeSeconds();
 
-            hypotheticalOffsets.Sort();
-            String[] hypOffsets = new String[hypotheticalOffsets.Count];
-            int ii = 0;
-            foreach (OffsetParameters offset in hypotheticalOffsets)
-            {
-                hypOffsets[ii++] = offset.GetStringRepresentation();
-            }
-
-            // Program.WriteStringArrayToFile($"C:\\Users\\Kier\\Developing\\ImageStackerConsole\\testImages\\TriTest_{unixTime}.txt", hypOffsets);
             if (bestOffset == null)
             {
                 // Handle Failure
