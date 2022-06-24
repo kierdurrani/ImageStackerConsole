@@ -42,7 +42,9 @@ namespace ImageStackerConsole.Alignment
 
             string[] lines = System.IO.File.ReadAllLines(FilePath);
 
-            string[] imagePaths = lines[0].Split(';');
+            string[] imagePaths = (lines[0].Substring(0, lines[0].Length - 1)).Split(';'); // remove trailing ; then split.
+
+            Console.WriteLine("Importing Images: " + imagePaths.Length);
 
             OffsetParameters[,] offsetParameterTable = new OffsetParameters[imagePaths.Length, imagePaths.Length];
             for (int j = 0; j < imagePaths.Length; j++)
@@ -50,6 +52,7 @@ namespace ImageStackerConsole.Alignment
                 string[] lineOfCoords = lines[j + 1].Split(';');
                 for (int i = 0; i < imagePaths.Length; i++)
                 {
+                    Console.WriteLine($"{j},{i}/{imagePaths.Length}");
                     offsetParameterTable[j, i] = new OffsetParameters(lineOfCoords[i]);
                 } 
             }
@@ -57,7 +60,6 @@ namespace ImageStackerConsole.Alignment
             return new AlignedImages(imagePaths, offsetParameterTable);
         }
 
-        // TODO METHODS
         public bool IsConsistent()
         {
             bool isConsistent = true;

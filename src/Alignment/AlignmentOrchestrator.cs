@@ -7,7 +7,7 @@
         private IAlignmentMethod AlignmentMethod;
         // public delegate OffsetParameters AlignPair(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar);
 
-        public bool allPairs {get; set;} = false;
+        public bool AllPairs {get; set;} = false;
         private LoadingBar AlignmentLoadingBar;
 
         public AlignmentOrchestrator(string[] paths, IAlignmentMethod method)
@@ -24,7 +24,7 @@
             // Populate the table
             for (int j = 0; j < OffsetParametersArray.GetLength(0); j++)
             {
-                if (allPairs || (j == 0))
+                if (AllPairs || (j == 0))
                 {
                     // Calculate the offset parameters explicity for the first row 
                     RGBImage jImage = new RGBImage(ImagePaths[j]);

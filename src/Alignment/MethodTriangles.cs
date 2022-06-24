@@ -95,7 +95,7 @@ namespace ImageStackerConsole.Alignment
             foreach (SimilarTriangles similarTriangles in similarTriangleList)
             {
                 // Hypothetical Offsets: - This is what you apply to the 2nd image to align with first.
-                double zoom = similarTriangles.t1.length1 / similarTriangles.t2.length1;
+                double zoom = (similarTriangles.t1.length1 + similarTriangles.t1.length2 + similarTriangles.t1.length3) / (similarTriangles.t2.length1 + similarTriangles.t2.length2 + similarTriangles.t2.length3);
 
                 //  To find the rotation -> take the longest vector from the centre of the triangle to vertex as a reference vector.
                 double largestMedianBearing1 = Math.Atan2(similarTriangles.t1.largestSemiMedian.yCoord, similarTriangles.t1.largestSemiMedian.xCoord);
@@ -113,6 +113,8 @@ namespace ImageStackerConsole.Alignment
 
                 // Add this to the list of possible offsets
                 OffsetParameters hypotheticalOffset = new OffsetParameters(dx, dy, rotation, zoom);
+                hypotheticalOffset.ZoomError = ((similarTriangles.t1.length1 + 1.0 )  / (similarTriangles.t2.length1 - 1.0)) - ((similarTriangles.t1.length1 ) / (similarTriangles.t2.length1 ));
+                hypotheticalOffset.ZoomError = similarTriangles.t1.centre.xCoord;
                 hypotheticalOffsets.Add(hypotheticalOffset);
 
             }
@@ -124,9 +126,9 @@ namespace ImageStackerConsole.Alignment
             OffsetParameters[] possOffsets = hypotheticalOffsets.ToArray();
             Array.Sort(possOffsets);
 
-            const double transTolerance = 2.0;
-            const double rotTolerance = 0.001;
-            const double zoomTolerance = 0.001;
+            const double transTolerance = 3.0;
+            const double rotTolerance = 0.002;
+            const double zoomTolerance = 0.0005;
             
             OffsetParameters bestOffset = null;
             int mostVotes = 3;

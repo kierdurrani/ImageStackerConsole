@@ -34,7 +34,6 @@ namespace ImageStackerConsole.Alignment
             return $"({xCoord},{yCoord})";
         }
 
-
         public static double Distance(StarCoordinates coordinates1, StarCoordinates coordinates2)
         {
             double dx = coordinates1.xCoord - coordinates2.xCoord;

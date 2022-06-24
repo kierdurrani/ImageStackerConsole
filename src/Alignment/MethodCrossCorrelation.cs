@@ -4,19 +4,22 @@ namespace ImageStackerConsole.Alignment
 {
     class MethodCrossCorrelation : IAlignmentMethod
     {
+        // Extremal 
+        int xMax = 160;
+        int yMax = 160;
+        
         public OffsetParameters CalculateOffsetParameters(RGBImage rgbImg1, RGBImage rgbImg2, LoadingBar loadingBar)
         {
             byte[,] img1 = rgbImg1.GetGreyscaleArray();
             byte[,] img2 = rgbImg2.GetGreyscaleArray();
-
 
             byte[,] smallImg1 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img1))))))));
             byte[,] smallImg2 = MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(MakeSmaller(GaussianBlur(img2))))))));
             int scaleFactor = 16;
 
             ulong bestValue = 0;
-            int yMax = (int) (0.75 * Math.Min(smallImg1.GetLength(0), smallImg2.GetLength(1)) );
-            int xMax = (int) (0.75 * Math.Min(smallImg1.GetLength(1), smallImg2.GetLength(1)) );
+            // int yMax = (int) (0.75 * Math.Min(smallImg1.GetLength(0), smallImg2.GetLength(1)) );
+            // int xMax = (int) (0.75 * Math.Min(smallImg1.GetLength(1), smallImg2.GetLength(1)) );
 
             int xBest = 0;
             int yBest = 0;

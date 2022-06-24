@@ -73,6 +73,7 @@
     <Compile Include="Alignment\AlignedImages.cs" />
     <Compile Include="Alignment\AlignmentOrchestrator.cs" />
     <Compile Include="Alignment\AlignmentFailedException.cs" />
+    <Compile Include="StellarDBLoader.cs" />
     <Compile Include="Alignment\MethodTriangles.cs" />
     <Compile Include="Alignment\StarCoordinates.cs" />
     <Compile Include="Alignment\CPPCrossCorrelation.cs" />

@@ -56,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ImageStackerConsole\ImageStackerConsole.csproj">
+    <ProjectReference Include="..\src\ImageStackerConsole.csproj">
       <Project>{32c4e822-c515-4d12-906c-a751f9bcfcfc}</Project>
       <Name>ImageStackerConsole</Name>
     </ProjectReference>

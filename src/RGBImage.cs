@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -13,16 +14,28 @@ namespace ImageStackerConsole
         public int ImageHeight { get { return RGBArray.GetLength(0); } }
         public int ImageWidth { get { return RGBArray.GetLength(1); } }
 
-        public RGBImage(string path)
-        {
+        public RGBImage(string path) : this(new Bitmap(path)) { } // TODO - try/catch
 
+        public RGBImage(Bitmap imgBitmap)
+        {
             // Uses the method: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.bitmap.lockbits
             // Locking creates a buffer in unmanaged memory which is faster to read and manipulate.
             // Lock bitmap to BitmapData class, copy into the bitmapByteArray, then copy into correct shape array
 
-            Bitmap imgBitmap = new Bitmap(path); // TODO - try/catch
-
             Rectangle rect = new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height);
+            
+            Console.WriteLine(imgBitmap.PixelFormat);
+            if (imgBitmap.PixelFormat != PixelFormat.Format24bppRgb)
+            {
+                Console.WriteLine("Fixing pixel format");
+                Bitmap clone = new Bitmap(imgBitmap.Width, imgBitmap.Height, PixelFormat.Format24bppRgb);
+                using (Graphics gr = Graphics.FromImage(clone))
+                {
+                    gr.DrawImage(imgBitmap, new Rectangle(0, 0, clone.Width, clone.Height));
+                }
+                imgBitmap = clone;
+            }
+
             BitmapData bmpData = imgBitmap.LockBits(rect, ImageLockMode.ReadOnly, imgBitmap.PixelFormat);
                         
             RGBArray = new byte[imgBitmap.Height, imgBitmap.Width, 3];
@@ -35,7 +48,7 @@ namespace ImageStackerConsole
             {                
                 for (int x = 0; x < imgBitmap.Width; x++)
                 {
-                    int byteIndex = y * bmpData.Stride + 3 * x;
+                    int byteIndex = y * bmpData.Stride + 3 * x; 
                     RGBArray[y, x, 0] = bitmapByteArray[byteIndex    ];  // B
                     RGBArray[y, x, 1] = bitmapByteArray[byteIndex + 1];  // G
                     RGBArray[y, x, 2] = bitmapByteArray[byteIndex + 2];  // R
